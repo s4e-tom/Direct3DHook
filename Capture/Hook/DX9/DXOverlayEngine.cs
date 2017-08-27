@@ -114,9 +114,15 @@ namespace Capture.Hook.DX9
                     }
                     else if (imageElement != null)
                     {
+                        //Apply the scaling of the imageElement
+                        var scaling = Matrix.Scaling(imageElement.Scale);
+                        _sprite.Transform = scaling;
+
                         Texture image = GetImageForImageElement(imageElement);
                         if (image != null)
                             _sprite.Draw(image, new SharpDX.ColorBGRA(imageElement.Tint.R, imageElement.Tint.G, imageElement.Tint.B, imageElement.Tint.A), null, null, new Vector3(imageElement.Location.X, imageElement.Location.Y, 0));
+                        //Reset the transform for other elements
+                        _sprite.Transform = Matrix.Identity;
                     }
                 }
             }
