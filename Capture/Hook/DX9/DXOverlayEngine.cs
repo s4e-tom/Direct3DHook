@@ -184,6 +184,14 @@ namespace Capture.Hook.DX9
                     _imageCache[element] = result;
                 }
             }
+            else
+            {
+                if (!_imageCache.TryGetValue(element, out result))
+                {
+                    result = ToDispose(SharpDX.Direct3D9.Texture.FromStream(_device, element.GetStream()));
+                    _imageCache[element] = result;
+                }
+            }
             return result;
         }
 
@@ -204,6 +212,5 @@ namespace Capture.Hook.DX9
             if (disposableObj != null)
                 disposableObj.Dispose();
         }
-
     }
 }

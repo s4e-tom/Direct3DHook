@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -56,6 +57,13 @@ namespace Capture.Hook.Common
                     this.Bitmap = null;
                 }
             }
+        }
+
+        internal MemoryStream GetStream()
+        {
+            MemoryStream memoryStream = new MemoryStream();
+            this.Bitmap.Save(memoryStream, System.Drawing.Imaging.ImageFormat.Bmp);
+            return memoryStream;
         }
     }
 }

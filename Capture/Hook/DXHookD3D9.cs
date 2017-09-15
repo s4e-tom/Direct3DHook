@@ -10,6 +10,8 @@ using System.Threading;
 using System.Drawing;
 using Capture.Interface;
 using SharpDX.Direct3D9;
+using System.Windows.Media;
+using System.Globalization;
 
 namespace Capture.Hook
 {
@@ -389,19 +391,39 @@ namespace Capture.Hook
                             RemoveAndDispose(ref _overlayEngine);
 
                         _overlayEngine = ToDispose(new DX9.DXOverlayEngine());
+                        
                         // Create Overlay
-                        System.Diagnostics.Debug.WriteLine(Directory.GetCurrentDirectory());
-
                         Capture.Hook.Common.ImageElement test = new Capture.Hook.Common.ImageElement(@"D:\github\GGXrdR2-Combo-Workshop\GuiltyGearXrdR2ComboWorkshop\test.bmp") { Location = new System.Drawing.Point(20, 20) };
-                        test.Tint = Color.FromArgb(127, 255, 255, 255);
+                        test.Tint = System.Drawing.Color.FromArgb(127, 255, 255, 255);
                         test.Scale = 3.0f;
+
+                        Capture.Hook.Common.ImageElement bg = new Capture.Hook.Common.ImageElement(@"D:\github\GGXrdR2-Combo-Workshop\GuiltyGearXrdR2ComboWorkshop\bg.bmp") { Location = new System.Drawing.Point(0, 0) };
+                        bg.Tint = System.Drawing.Color.FromArgb(180, 255, 255, 255);
+                        bg.Scale = 1920.0f;
+
+                        Capture.Hook.Common.ImageElement dlButton = new Capture.Hook.Common.ImageElement(@"D:\github\GGXrdR2-Combo-Workshop\GuiltyGearXrdR2ComboWorkshop\dlButton.png");
+                        Capture.Hook.Common.ImageElement upButton = new Capture.Hook.Common.ImageElement(@"D:\github\GGXrdR2-Combo-Workshop\GuiltyGearXrdR2ComboWorkshop\upButton.png");
+                        dlButton.Location = new Point(1920 / 2 - dlButton.Bitmap.Width - 100, 1080 / 2);                        
+                        upButton.Location = new Point(1920 / 2 + upButton.Bitmap.Width + 100, 1080 / 2);
+
+                        System.Drawing.Font sdFont = new System.Drawing.Font("Arial", 50, FontStyle.Bold);
+                        Capture.Hook.Common.TextElement text = new Capture.Hook.Common.TextElement(sdFont);
+                        text.Text = "Guilty Gear Xrd R2 Combo Workshop";
+                        text.Location = new System.Drawing.Point(1920 / 2 - (int)Measure(text.Text,text.Font.Name,text.Font.Size)/2, 1080 / 2 - 150);
+                        text.Color = System.Drawing.Color.White;
+                        text.AntiAliased = true;
+
                         _overlayEngine.Overlays.Add(new Capture.Hook.Common.Overlay
                         {
                             Elements =
                             {
-                                test,
+                                bg,
+                                dlButton,
+                                upButton,
+                                text,
+                                new Capture.Hook.Common.TextElement(new System.Drawing.Font("Arial", 16, FontStyle.Bold)) {Text = "GuiltyGearXrdR2ComboWorkshop", Location = new System.Drawing.Point(5,5), Color = System.Drawing.Color.Red, AntiAliased = true },
                                 // Add frame rate
-                                new Capture.Hook.Common.FramesPerSecond(new System.Drawing.Font("Arial", 16, FontStyle.Bold)) { Location = new System.Drawing.Point(5,5), Color = System.Drawing.Color.Red, AntiAliased = true },
+                                new Capture.Hook.Common.FramesPerSecond(new System.Drawing.Font("Arial", 16, FontStyle.Bold)) { Location = new System.Drawing.Point(5,100), Color = System.Drawing.Color.Red, AntiAliased = true },
                                 // Example of adding an image to overlay (can implement semi transparency with Tint, e.g. Ting = Color.FromArgb(127, 255, 255, 255))
                                 //new Capture.Hook.Common.ImageElement(@"C:\Temp\test.bmp") { Location = new System.Drawing.Point(20, 20) }
                             }
@@ -451,6 +473,19 @@ namespace Capture.Hook
             _resolvedTarget = ToDispose(Surface.CreateRenderTarget(device, width, height, format, MultisampleType.None, 0, false));
 
             _query = ToDispose(new Query(device, QueryType.Event));
+        }
+
+        public static float Measure(string text, string fontFamily, float emSize)
+        {
+            FormattedText formatted = new FormattedText(
+                text,
+                CultureInfo.CurrentCulture,
+                System.Windows.FlowDirection.LeftToRight,
+                new Typeface(fontFamily),
+                emSize,
+                System.Windows.Media.Brushes.Black);
+
+            return (float)formatted.Width;
         }
     }
 }
